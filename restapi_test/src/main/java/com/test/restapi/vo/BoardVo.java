@@ -1,110 +1,111 @@
 package com.test.restapi.vo;
 
 import lombok.*;
-import lombok.Builder.Default;
-
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import org.hibernate.annotations.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
-@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "board")
 public class BoardVo {
-	
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long board_no;
-	
-	@Column(length=3)
-	private String board_type;
-	
-	@Column(length = 1000)
-	private String board_subject;
-	
-	@Column(columnDefinition = "TEXT")
-	private String board_content;
-	
-	@Column
-	private Long board_views;
-	
-	@Column(length = 8)
-	private String board_fr_date;
-	
-    @Column(length = 8)
-	private String board_ed_date;
-	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "board_no")
+	private Long no;
+
+	@Column(name = "board_type", length = 3)
+	private String type;
+
+	@Column(name = "board_subject", length = 1000)
+	private String subject;
+
+	@Column(name = "board_content", columnDefinition = "TEXT")
+	private String content;
+
+	@Column(name = "board_views")
+	private Long views;
+
+	@Column(name = "board_fr_date", length = 8)
+	private String frdate;
+
+	@Column(name = "board_ed_date", length = 8)
+	private String eddate;
+
+	@Column(name = "board_del_flag", length = 1)
+	private int delflag;
+
 	@CreationTimestamp
-    @Column(nullable = false, updatable = false)
-	private LocalDateTime insert_date;
-	
-	@Column(length = 50)
-	private String insert_user;
-	
+	@Column(name = "insert_date", nullable = false, updatable = false)
+	private LocalDateTime insertdate;
+
+	@Column(name = "insert_user", length = 50)
+	private String insertuser;
+
 	@UpdateTimestamp
-    @Column(nullable = false)
-	private LocalDateTime update_date;
-	
-	@Column(length = 50)
-	private String update_user;
-	
-	//@OneToMany(mappedBy = "file")
-	//private List<FileVo> fileVos = new ArrayList<FileVo>();
-	
-    @PrePersist
-    public void prePersist() {
-        this.board_views = this.board_views == null ? 0 : this.board_views;
-    }
-	
-    public void setBoard_views(Long board_views) {
-		this.board_views = board_views;
+	@Column(name = "update_date", nullable = false)
+	private LocalDateTime updatedate;
+
+	@Column(name = "update_user", length = 50)
+	private String updateuser;
+
+	@PrePersist
+	public void prePersist() {
+		this.views = this.views == null ? 0 : this.views;
 	}
 
-	public void setInsert_user(String insert_user) {
-		this.insert_user = insert_user;
-	}
-
-	public void setUpdate_user(String update_user) {
-		this.update_user = update_user;
-	}
-
-	public void setBoard_type(String board_type) {
-		this.board_type = board_type;
-	}
-
-	public void setBoard_subject(String board_subject) {
-		this.board_subject = board_subject;
-	}
-
-	public void setBoard_content(String board_content) {
-		this.board_content = board_content;
-	}
-
-	public void setBoard_fr_date(String board_fr_date) {
-		this.board_fr_date = board_fr_date;
-	}
-
-	public void setBoard_ed_date(String board_ed_date) {
-		this.board_ed_date = board_ed_date;
-	}
-	
-	
 	@Builder
-	public BoardVo(Long board_no, String board_subject, String board_content, Long board_views, String board_fr_date, String board_ed_date, String insert_user, String update_user) {
-		this.board_no = board_no;
-		this.board_subject = board_subject;
-		this.board_content = board_content;
-		this.board_views = board_views;
-		this.board_fr_date = board_fr_date;
-		this.board_ed_date = board_ed_date;
-		this.insert_user = insert_user;
-		this.update_user = update_user;
-			
+	public BoardVo(Long no, String subject, String content, Long views, String frdate,
+			String eddate, int delflag, String insertuser, String updateuser) {
+		this.no = no;
+		this.subject = subject;
+		this.content = content;
+		this.views = views;
+		this.frdate = frdate;
+		this.eddate = eddate;
+		this.delflag = delflag;
+		this.insertuser = insertuser;
+		this.updateuser = updateuser;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public void setViews(Long views) {
+		this.views = views;
+	}
+
+	public void setFrdate(String frdate) {
+		this.frdate = frdate;
+	}
+
+	public void setEddate(String eddate) {
+		this.eddate = eddate;
+	}
+
+	public void setDelflag(int delflag) {
+		this.delflag = delflag;
+	}
+
+	public void setInsertuser(String insertuser) {
+		this.insertuser = insertuser;
+	}
+
+	public void setUpdateuser(String updateuser) {
+		this.updateuser = updateuser;
 	}
 
 }

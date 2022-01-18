@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @DynamicInsert
 @DynamicUpdate
@@ -30,54 +30,59 @@ import lombok.NoArgsConstructor;
 public class FileVo {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long file_no;
-	
-	@Column(length = 1000)
-	private String file_name;
-	
-	@Column(columnDefinition = "TEXT")
-	private String file_path;
-	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "file_no")
+	private Long no;
+
+	@Column(name = "file_name", length = 1000)
+	private String name;
+
+	@Column(name = "file_path", columnDefinition = "TEXT")
+	private String path;
+
 	@CreationTimestamp
-    @Column(nullable = false, updatable = false)
-	private LocalDateTime insert_date;
-	
-	@Column(length = 50)
-	private String insert_user;
-	
+	@Column(name = "insert_date", nullable = false, updatable = false)
+	private LocalDateTime insertdate;
+
+	@Column(name = "insert_user", length = 50)
+	private String insertuser;
+
 	@UpdateTimestamp
-    @Column(nullable = false)
-	private LocalDateTime update_date;
-	
-	@Column(length = 50)
-	private String update_user;
-	
+	@Column(name = "update_date", nullable = false)
+	private LocalDateTime updatedate;
+
+	@Column(name = "update_user", length = 50)
+	private String updateuser;
+
+	@Column(name = "file_del_flag", length = 1)
+	private int delflag;
+
 	@ManyToOne
 	@JoinColumn(name = "board_no", referencedColumnName = "board_no")
-    private BoardVo boardVo;
+	private BoardVo boardVo;
 
-	public void setInsert_user(String insert_user) {
-		this.insert_user = insert_user;
-	}
-
-	public void setUpdate_user(String update_user) {
-		this.update_user = update_user;
-	}
-	
-	public void setBoardVo(BoardVo boardVo) { 
-		//if (this.boardVo != null) { 
-		//   this.boardVo.getFileVos().remove(this); 
-		// } 
-	    this.boardVo = boardVo;            
-	    //boardVo.getFileVos().add(this);
-	} 
-	
 	@Builder
-	public FileVo(String file_path, String file_name) {
-		this.file_name = file_name;
-		this.file_path = file_path;
-			
+	public FileVo(String path, String name, int delflag) {
+		this.path = path;
+		this.name = name;
+		this.delflag = delflag;
+
 	}
-	
+
+	public void setInsertuser(String insertuser) {
+		this.insertuser = insertuser;
+	}
+
+	public void setUpdateuser(String updateuser) {
+		this.updateuser = updateuser;
+	}
+
+	public void setBoardVo(BoardVo boardVo) {
+		this.boardVo = boardVo;
+	}
+
+	public void setDelflag(int delflag) {
+		this.delflag = delflag;
+	}
+
 }

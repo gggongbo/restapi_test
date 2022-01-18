@@ -2,18 +2,13 @@ package com.test.restapi.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.restapi.repository.BoardRepository;
-import com.test.restapi.repository.FileRepository;
 import com.test.restapi.service.FileService;
 import com.test.restapi.vo.BoardVo;
 
@@ -29,11 +24,14 @@ public class BoardService {
 	@Transactional
 	public BoardVo find(String boardNo) throws Exception {
 		BoardVo getBoardVo = boardRepository.findById(Long.parseLong(boardNo)).orElse(null);
+		int delFlag = 1;
 
 		if (getBoardVo == null) {
 			throw new Exception("null:get");
+		} else if (getBoardVo.getDelflag()==delFlag) {
+			throw new Exception("null:deleted");
 		} else {
-			getBoardVo.setBoard_views(getBoardVo.getBoard_views() + 1);
+			getBoardVo.setViews(getBoardVo.getViews() + 1);
 		}
 
 		return getBoardVo;
@@ -41,7 +39,9 @@ public class BoardService {
 
 	public List<BoardVo> findAll() throws Exception {
 		List<BoardVo> boardList = new ArrayList<>();
-		boardList = boardRepository.findAll();
+		int delFlag = 0; //삭제되지 않은 데이터만 조회
+		
+		boardList = boardRepository.findByDelflag(delFlag);
 
 		if (boardList == null || boardList.isEmpty()) {
 			throw new Exception("null:getList");
@@ -49,19 +49,12 @@ public class BoardService {
 
 		return boardList;
 	}
-	
-	public BoardVo insert (BoardVo boardVo) throws Exception {
-		BoardVo newBoardVo = boardRepository.save(boardVo);
-		
-		if(newBoardVo==null) {
-			throw new Exception("error:insert");
-		}
-		
-		return newBoardVo;
-	}
 
 	public BoardVo insert (List<MultipartFile> multipartFiles, String boardVoStr) throws Exception {
+		
 		BoardVo boardVo  = new ObjectMapper().readValue(boardVoStr, BoardVo.class);
+		int delFlag = 0; //게시글 등록되는 경우 boad_del_flag 값 0으로 등록
+		boardVo.setDelflag(delFlag);
 		BoardVo newBoardVo = boardRepository.save(boardVo);
 		
 		if(newBoardVo==null) {
@@ -69,91 +62,65 @@ public class BoardService {
 		}
 		
 		if (multipartFiles != null) {
-			fileService.uploadMultiFiles(multipartFiles, newBoardVo.getBoard_no());
-		}
+			fileService.uploadMultiFiles(multipartFiles, newBoardVo.getNo());
+		} 
 		
-		return newBoardVo;
-	}
-	
-	@Transactional
-	public BoardVo update(BoardVo boardVo) throws Exception {
-		BoardVo newBoardVo = boardRepository.findById(boardVo.getBoard_no()).orElse(null);
-
-		if (newBoardVo == null) {
-			throw new Exception("null:update");
-		}
-
-		if (!StringUtils.isEmpty(boardVo.getBoard_subject())) {
-			newBoardVo.setBoard_content(boardVo.getBoard_subject());
-		}
-		if (!StringUtils.isEmpty(boardVo.getBoard_type())) {
-			newBoardVo.setBoard_type(boardVo.getBoard_type());
-		}
-		if (!StringUtils.isEmpty(boardVo.getBoard_content())) {
-			newBoardVo.setBoard_content(boardVo.getBoard_content());
-		}
-		if (!StringUtils.isEmpty(boardVo.getBoard_fr_date())) {
-			newBoardVo.setBoard_fr_date(boardVo.getBoard_fr_date());
-		}
-		if (!StringUtils.isEmpty(boardVo.getBoard_ed_date())) {
-			newBoardVo.setBoard_ed_date(boardVo.getBoard_ed_date());
-		}
-		if (!StringUtils.isEmpty(boardVo.getInsert_user())) {
-			newBoardVo.setInsert_user(boardVo.getInsert_user());
-		}
-		if (!StringUtils.isEmpty(boardVo.getUpdate_user())) {
-			newBoardVo.setUpdate_user(boardVo.getUpdate_user());
-		}
-
 		return newBoardVo;
 	}
 
 	@Transactional
 	public BoardVo update(List<MultipartFile> multipartFiles, String boardVoStr) throws Exception {
 		BoardVo boardVo  = new ObjectMapper().readValue(boardVoStr, BoardVo.class);
-		BoardVo newBoardVo = boardRepository.findById(boardVo.getBoard_no()).orElse(null);
-
+		BoardVo newBoardVo = boardRepository.findById(boardVo.getNo()).orElse(null);
+		int delFlag = 1;
+		
 		if (newBoardVo == null) {
 			throw new Exception("null:update");
+		} else if (newBoardVo.getDelflag()==delFlag) {
+			throw new Exception("null:deleted");
 		}
 
-		if (!StringUtils.isEmpty(boardVo.getBoard_subject())) {
-			newBoardVo.setBoard_content(boardVo.getBoard_subject());
+		if (!StringUtils.isEmpty(boardVo.getSubject())) {
+			newBoardVo.setSubject(boardVo.getSubject());
 		}
-		if (!StringUtils.isEmpty(boardVo.getBoard_type())) {
-			newBoardVo.setBoard_type(boardVo.getBoard_type());
+		if (!StringUtils.isEmpty(boardVo.getType())) {
+			newBoardVo.setType(boardVo.getType());
 		}
-		if (!StringUtils.isEmpty(boardVo.getBoard_content())) {
-			newBoardVo.setBoard_content(boardVo.getBoard_content());
+		if (!StringUtils.isEmpty(boardVo.getContent())) {
+			newBoardVo.setContent(boardVo.getContent());
 		}
-		if (!StringUtils.isEmpty(boardVo.getBoard_fr_date())) {
-			newBoardVo.setBoard_fr_date(boardVo.getBoard_fr_date());
+		if (!StringUtils.isEmpty(boardVo.getFrdate())) {
+			newBoardVo.setFrdate(boardVo.getFrdate());
 		}
-		if (!StringUtils.isEmpty(boardVo.getBoard_ed_date())) {
-			newBoardVo.setBoard_ed_date(boardVo.getBoard_ed_date());
+		if (!StringUtils.isEmpty(boardVo.getEddate())) {
+			newBoardVo.setEddate(boardVo.getEddate());
 		}
-		if (!StringUtils.isEmpty(boardVo.getInsert_user())) {
-			newBoardVo.setInsert_user(boardVo.getInsert_user());
+		if (!StringUtils.isEmpty(boardVo.getInsertuser())) {
+			newBoardVo.setInsertuser(boardVo.getInsertuser());
 		}
-		if (!StringUtils.isEmpty(boardVo.getUpdate_user())) {
-			newBoardVo.setUpdate_user(boardVo.getUpdate_user());
+		if (!StringUtils.isEmpty(boardVo.getUpdateuser())) {
+			newBoardVo.setUpdateuser(boardVo.getUpdateuser());
 		}
 		
 		if (multipartFiles != null) {
-			fileService.uploadMultiFiles(multipartFiles, newBoardVo.getBoard_no());
+			fileService.uploadMultiFiles(multipartFiles, newBoardVo.getNo());
 		}
 
 		return newBoardVo;
 	}
 
-	public void delete(BoardVo boardVo) throws Exception {
-		long beforeCnt = boardRepository.count();
-		boardRepository.delete(boardVo);
-		long afterCnt = boardRepository.count();
-
-		if (afterCnt >= beforeCnt) {
-			throw new Exception("error:delete");
+	@Transactional
+	public void delete(String boardVoStr) throws Exception {
+		BoardVo boardVo  = new ObjectMapper().readValue(boardVoStr, BoardVo.class);
+		BoardVo newBoardVo = boardRepository.findById(boardVo.getNo()).orElse(null);
+		int delFlag = 1; //삭제되는 경우 boad_del_flag, file_del_flag 값 1로 변경
+		
+		if (newBoardVo == null) {
+			throw new Exception("null:delete");
 		}
+		
+		newBoardVo.setDelflag(delFlag);
+		fileService.deleteFiles(newBoardVo);
 	}
 
 }

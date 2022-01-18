@@ -1,9 +1,7 @@
 package com.test.restapi.service;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,17 +9,14 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
-import javax.servlet.ServletContext;
-
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.test.restapi.repository.FileRepository;
 import com.test.restapi.vo.BoardVo;
 import com.test.restapi.vo.FileVo;
@@ -56,35 +51,43 @@ public class FileService {
 		}
 	}
 
-	public void uploadFile(MultipartFile multipartFile, Long boardNo) throws IOException {
+	public void uploadFile(MultipartFile multipartFile, Long boardNo) throws Exception {
 		Path filePath = Paths.get(this.fileUploadPath).toAbsolutePath().normalize();
 		String fileName = multipartFile.getOriginalFilename();
-		FileVo fileVo = FileVo.builder().file_path(filePath.toString())
-				  		.file_name(fileName).build();
-		fileVo.setBoardVo(BoardVo.builder().board_no(boardNo).build());
+		FileVo fileVo = FileVo.builder().path(filePath.toString())
+				  		.name(fileName).build();
+		BoardVo boardVo = BoardVo.builder().no(boardNo).build();
+		fileVo.setBoardVo(boardVo);
+		int delFlag = 0;
 
 		if (!Files.exists(filePath)) {
 			init();
 		}
 
-		Files.deleteIfExists(filePath.resolve(fileName));
+		Files.copy(multipartFile.getInputStream(), filePath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+
+		//같은 게시글에 이미 같은 파일이 첨부된 경우에는 file 테이블에 데이터 입력하지 않음
+		List<FileVo> otherFileVos = fileRepository.findByPathAndNameAndDelflagAndBoardVo(filePath.toString(), fileName, delFlag, boardVo);
+		if(otherFileVos==null || otherFileVos.isEmpty()) {
+			fileRepository.save(fileVo);
+		}
+	}
+
+	public void uploadFile(MultipartFile multipartFile) throws Exception {
+		Path filePath = Paths.get(this.fileUploadPath).toAbsolutePath().normalize();
+		String fileName = multipartFile.getOriginalFilename();
+		FileVo fileVo = FileVo.builder().path(filePath.toString())
+		  		.name(fileName).build();
+
+		if (!Files.exists(filePath)) {
+			init();
+		}
+
 		Files.copy(multipartFile.getInputStream(), filePath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
 		fileRepository.save(fileVo);
 	}
 
-	public void uploadFile(MultipartFile multipartFile) throws IOException {
-		Path filePath = Paths.get(this.fileUploadPath).toAbsolutePath().normalize();
-		String fileName = multipartFile.getOriginalFilename();
-
-		if (!Files.exists(filePath)) {
-			init();
-		}
-
-		Files.deleteIfExists(filePath.resolve(fileName));
-		Files.copy(multipartFile.getInputStream(), filePath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-	}
-
-	public Map<String, Object> downloadFile(String fileName) throws IOException {
+	public Map<String, Object> downloadFile(String fileName) throws Exception {
 		Map<String, Object> fileMap = new HashMap<String, Object>();
 		Path filePath = Paths.get(this.fileUploadPath).resolve(fileName).normalize();
 		Resource resource = new UrlResource(filePath.toUri());
@@ -97,6 +100,35 @@ public class FileService {
 		} else {
 			throw new FileNotFoundException();
 		}
+	}
+	
+	@Transactional
+	public void deleteFile(FileVo fileVo) throws Exception {
+		String strFilePath = fileVo.getPath();
+		String fileName = fileVo.getName();
+		Long fileNo = fileVo.getNo();
+		Path filePath = Paths.get(strFilePath).toAbsolutePath().normalize();
+		int delFlag = 0; 
+		
+		//다른 게시글에서 파일 이용하지 않는 경우에는 파일 삭제 진행
+		List<FileVo> otherFileVos = fileRepository.findByPathAndNameAndDelflagAndNoNot(strFilePath, fileName, delFlag, fileNo);
+		if(otherFileVos==null || otherFileVos.isEmpty()) {
+			Files.deleteIfExists(filePath.resolve(fileName));
+		}
+		
+		delFlag = 1; //삭제되는 경우 file_del_flag 값 1로 변경
+		fileVo.setDelflag(delFlag);
+	}
+
+	public void deleteFiles(BoardVo boardVo) throws Exception {
+		List<FileVo> fileVos = fileRepository.findByBoardVo(boardVo);
+		
+		if(fileVos !=null) {
+			for (FileVo fileVo : fileVos) {
+				deleteFile(fileVo);
+			}
+		}
+		
 	}
 
 }
