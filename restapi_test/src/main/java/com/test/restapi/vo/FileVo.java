@@ -59,7 +59,8 @@ public class FileVo {
 	private BoardVo boardVo;
 
 	@Builder
-	public FileVo(String path, String name) {
+	public FileVo(Long no, String path, String name) {
+		this.no = no;
 		this.path = path;
 		this.name = name;
 
