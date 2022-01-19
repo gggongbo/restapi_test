@@ -41,6 +41,4 @@ No|Method|URI|Description
 22/01/17 이슈 : Controller 로직 리턴 타입 리팩토링, 파일 다운로드 API 호출 후 응답 시, 파일 MIME 타입 확인 되지 않아 발생한 이슈 해결 -> ResponseEntity에 ContentType 설정하여 해결
 22/01/18 이슈 : 공지사항 등록/수정과 파일 업로드 데이터를 한 요청에서 동시에 받아올 수 있도록 개선
 22/01/19 이슈 : 단위/통합테스트 코드 작성시 MockMultiPartFile 적용 및 테스트
-
-
-
+```
