@@ -95,6 +95,7 @@ public class BoardService {
 		}
 		
 		if (multipartFiles != null) {
+			fileService.deleteFiles(newBoardVo);
 			fileService.uploadMultiFiles(multipartFiles, newBoardVo.getNo());
 		}
 
