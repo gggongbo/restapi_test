@@ -2,6 +2,7 @@ package com.test.restapi.vo;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -54,18 +54,14 @@ public class FileVo {
 	@Column(name = "update_user", length = 50)
 	private String updateuser;
 
-	@Column(name = "file_del_flag", length = 1)
-	private int delflag;
-
-	@ManyToOne
-	@JoinColumn(name = "board_no", referencedColumnName = "board_no")
+	@ManyToOne(cascade = CascadeType.DETACH)
+	@JoinColumn(name = "board_no")
 	private BoardVo boardVo;
 
 	@Builder
-	public FileVo(String path, String name, int delflag) {
+	public FileVo(String path, String name) {
 		this.path = path;
 		this.name = name;
-		this.delflag = delflag;
 
 	}
 
@@ -79,10 +75,6 @@ public class FileVo {
 
 	public void setBoardVo(BoardVo boardVo) {
 		this.boardVo = boardVo;
-	}
-
-	public void setDelflag(int delflag) {
-		this.delflag = delflag;
 	}
 
 }

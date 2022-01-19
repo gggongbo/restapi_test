@@ -11,8 +11,8 @@ public interface FileRepository extends JpaRepository<FileVo, Long>{
 	
 	List<FileVo> findByBoardVo(BoardVo boardvo);
 	
-	List<FileVo> findByPathAndNameAndDelflagAndNoNot(String path, String name, int delflag, Long no);
+	List<FileVo> findByPathAndNameAndNoNot(String path, String name, Long no);
 	
-	List<FileVo> findByPathAndNameAndDelflagAndBoardVo(String path, String name, int delflag, BoardVo boardVo);
+	List<FileVo> findByPathAndNameAndBoardVo(String path, String name, BoardVo boardVo);
 
 }
