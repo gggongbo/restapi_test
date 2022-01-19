@@ -1,4 +1,4 @@
-# 공지사항 관리 REST API ver1.0
+# 공지사항 관리 REST API
 ---
 
 ## 개요
