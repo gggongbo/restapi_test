@@ -15,7 +15,7 @@ import com.test.restapi.vo.BoardVo;
 import com.test.restapi.vo.FileVo;
 
 @SpringBootTest
-//FileService ¸Ş¼Òµå ´ÜÀ§/ÅëÇÕ Å×½ºÆ® (ÆÄÀÏ ¾÷´Ù¿î·Îµå ±â´É ´ÜÀ§/ÅëÇÕ Å×½ºÆ®)
+//FileService ë©”ì†Œë“œ ë‹¨ìœ„/í†µí•© í…ŒìŠ¤íŠ¸ (íŒŒì¼ ì—…ë‹¤ìš´ë¡œë“œ ê¸°ëŠ¥ ë‹¨ìœ„/í†µí•© í…ŒìŠ¤íŠ¸)
 public class FileServiceTest {
 
 	@Autowired
@@ -30,12 +30,12 @@ public class FileServiceTest {
 	@Test
 	public void uploadMultiFilesTest() throws Exception {
 		String fileName = "test";
-	    String contentType = "jpg";
-	    String filePath = "src/test/resources/restapi_test_file/test.jpg";
-	    MockMultipartFile mockMultipartFile = getMockMultipartFile(fileName, contentType, filePath);
+	  String contentType = "jpg";
+	  String filePath = "src/test/resources/restapi_test_file/test.jpg";
+	  MockMultipartFile mockMultipartFile = getMockMultipartFile(fileName, contentType, filePath);
 		List<MultipartFile> multipartFiles = new ArrayList<MultipartFile>();
 		multipartFiles.add(mockMultipartFile);
-		
+    
 		fileService.uploadMultiFiles(multipartFiles);
 	}
 
@@ -43,16 +43,17 @@ public class FileServiceTest {
 	@Test
 	public void uploadFileTest() throws Exception {
 		String fileName = "test";
-	    String contentType = "jpg";
-	    String filePath = "src/test/resources/restapi_test_file/test.jpg";
+	  String contentType = "jpg";
+	  String filePath = "src/test/resources/restapi_test_file/test.jpg";
 		MultipartFile multiFile = getMockMultipartFile(fileName, contentType, filePath);
+    
 		fileService.uploadFile(multiFile);
 	}
 
 	@Transactional
 	@Test
 	public void downloadFileTest() throws Exception {
-		//ÆÄÀÏ ¾÷·Îµå °æ·Î¿¡ ÀÖ´Â ÆÄÀÏÀÇ ´Ù¿î·Îµå Å×½ºÆ®
+		//íŒŒì¼ ì—…ë¡œë“œ ê²½ë¡œì— ìˆëŠ” íŒŒì¼ì˜ ë‹¤ìš´ë¡œë“œ í…ŒìŠ¤íŠ¸
 		String filename = "test";
 		fileService.downloadFile(filename);
 	}

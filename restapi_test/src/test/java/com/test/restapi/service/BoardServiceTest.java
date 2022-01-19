@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.test.restapi.vo.BoardVo;
 
 @SpringBootTest
-//BoardService ¸Ş¼Òµå ´ÜÀ§/ÅëÇÕ Å×½ºÆ® (°Ô½Ã±Û µî·Ï, ¼öÁ¤, Á¶È¸, »èÁ¦ ±â´É ´ÜÀ§/ÅëÇÕ Å×½ºÆ®)
+//BoardService ë©”ì†Œë“œ ë‹¨ìœ„/í†µí•© í…ŒìŠ¤íŠ¸ (ê²Œì‹œê¸€ ë“±ë¡, ìˆ˜ì •, ì¡°íšŒ, ì‚­ì œ ê¸°ëŠ¥ ë‹¨ìœ„/í†µí•© í…ŒìŠ¤íŠ¸)
 public class BoardServiceTest {
 	
 	@Autowired
