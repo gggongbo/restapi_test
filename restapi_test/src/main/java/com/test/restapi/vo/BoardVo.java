@@ -36,9 +36,6 @@ public class BoardVo {
 	@Column(name = "board_ed_date", length = 8)
 	private String eddate;
 
-	@Column(name = "board_del_flag", length = 1)
-	private int delflag;
-
 	@CreationTimestamp
 	@Column(name = "insert_date", nullable = false, updatable = false)
 	private LocalDateTime insertdate;
@@ -52,22 +49,22 @@ public class BoardVo {
 
 	@Column(name = "update_user", length = 50)
 	private String updateuser;
-
+	
 	@PrePersist
 	public void prePersist() {
 		this.views = this.views == null ? 0 : this.views;
 	}
+	
 
 	@Builder
 	public BoardVo(Long no, String subject, String content, Long views, String frdate,
-			String eddate, int delflag, String insertuser, String updateuser) {
+			String eddate, String insertuser, String updateuser) {
 		this.no = no;
 		this.subject = subject;
 		this.content = content;
 		this.views = views;
 		this.frdate = frdate;
 		this.eddate = eddate;
-		this.delflag = delflag;
 		this.insertuser = insertuser;
 		this.updateuser = updateuser;
 	}
@@ -94,10 +91,6 @@ public class BoardVo {
 
 	public void setEddate(String eddate) {
 		this.eddate = eddate;
-	}
-
-	public void setDelflag(int delflag) {
-		this.delflag = delflag;
 	}
 
 	public void setInsertuser(String insertuser) {
